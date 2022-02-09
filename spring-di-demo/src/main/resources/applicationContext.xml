@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+    <import resource="bean.xml"/>
+    <bean id="address" class="com.gxz.demo.Address">
+        <property name="city" value="shanghai"/>
+        <property name="desc" value="desc"/>
+    </bean>
+    <bean id="student" class="com.gxz.demo.Student">
+        <!-- 普通注入-->
+        <property name="name" value="gxz"/>
+        <!-- 引用注入-->
+        <property name="address" ref="address"/>
+        <!-- 数组注入-->
+        <property name="likes" >
+            <array>
+                <value>篮球</value>
+                <value>游戏</value>
+            </array>
+        </property>
+        <!-- list注入-->
+        <property name="books">
+            <list>
+                <value>红楼梦</value>
+                <value>三国 </value>
+            </list>
+        </property>
+        <!-- map注入-->
+        <property name="card">
+            <map>
+                <entry key="idcard" value="123456"/>
+                <entry key="tel" value="111"/>
+            </map>
+        </property>
+        <!-- Set注入-->
+        <property name="games">
+            <set>
+                <value>王者</value>
+                <value>吃鸡</value>
+            </set>
+        </property>
+        <!-- Properties注入-->
+        <property name="prop">
+            <props>
+                <prop key="p1">v1</prop>
+                <prop key="p2">v2</prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>
