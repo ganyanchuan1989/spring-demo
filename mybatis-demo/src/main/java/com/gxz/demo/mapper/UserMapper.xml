@@ -6,4 +6,12 @@
     <select id="selectUsers" resultType="User">
         select * from com_user;
     </select>
+
+    <insert id="addUser" parameterType="user">
+        insert into com_user(username, pwd, sex, age) values (#{name}, #{pwd}, #{sex}, #{age})
+    </insert>
+
+    <delete id="deleteUser" parameterType="int">
+        deletes from com_user where id=#{id}
+    </delete>
 </mapper>

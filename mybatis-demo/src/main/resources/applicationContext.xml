@@ -1,39 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx
+        https://www.springframework.org/schema/tx/spring-tx.xsd
         http://www.springframework.org/schema/aop
-        https://www.springframework.org/schema/aop/spring-aop.xsd
-        http://www.springframework.org/schema/context
-        https://www.springframework.org/schema/context/spring-context.xsd">
+        https://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <context:property-placeholder location="classpath:jdbc.properties"></context:property-placeholder>
-    <!--    DataSource: 使用spring的数据库替换mybatis的配置：c3p0 dbcp druid
-            这里使用spring的jdbc
-    -->
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="${driver}"/>
-        <property name="url" value="${url}"/>
-        <property name="username" value="${username}"/>
-        <property name="password" value="${password}"/>
-    </bean>
-
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
-<!--        配置Mybatis配置-->
-        <property name="configLocation" value="classpath:mybatis-config.xml"/>
-        <property name="mapperLocations" value="classpath:com/gxz/demo/mapper/*.xml"/>
-    </bean>
-
-    <bean id="selSession" class="org.mybatis.spring.SqlSessionTemplate">
-        <constructor-arg index="0"  ref="sqlSessionFactory"/>
-    </bean>
+    <import resource="classpath:spring-dao.xml"></import>
 
     <bean id="userMapper" class="com.gxz.demo.mapper.UserMapperImpl">
         <property name="sqlSession" ref="selSession"/>
     </bean>
+
+<!--    配置声明式事务-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+<!--    结合AOP实现事务的织入-->
+<!--    配置事务通知-->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+<!--        给哪些方法配置事务-->
+<!--        配置事务的传播特性： propogation -->
+        <tx:attributes>
+            <!-- 所有add开头的方法-->
+            <tx:method name="add"/>
+            <!-- * 所有方法-->
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+
+<!--    配置事务切入-->
+    <aop:config>
+        <aop:pointcut id="txPointCut" expression="execution(* com.gxz.demo.mapper.*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointCut"/>
+    </aop:config>
 
 </beans>
